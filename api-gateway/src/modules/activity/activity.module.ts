@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
-import { AuthModule } from '../auth/auth.module';
+import { AuthModule } from '../user/user.module';
 import { ActivityController } from './activity.controller';
 import { ActivityService } from './activity.service';
 

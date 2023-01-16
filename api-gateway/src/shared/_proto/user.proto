@@ -1,9 +1,8 @@
 syntax="proto3";
 
-package auth;
+package user;
 
-
-service AuthController {
+service UserService {
     rpc create (CreateUserDto) returns (LoginResponse);
     rpc signIn (LoginUserDto) returns (LoginResponse);
     rpc verifyToken (Token) returns (UserId);
@@ -40,4 +39,5 @@ message Token{
 message UserId{
     string id=1;
 }
+
 

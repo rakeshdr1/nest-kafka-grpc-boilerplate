@@ -4,11 +4,11 @@ import { Request } from 'express';
 
 import { parseAuthorizationHeaders } from '../utils/parse-auth-headers';
 
-import { AuthService } from '../auth.service';
+import { UserService } from '../user.service';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly userService: UserService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
@@ -16,7 +16,7 @@ export class JwtGuard implements CanActivate {
       request.headers.authorization,
     );
 
-    const isValid = await this.authService.verifyToken(token);
+    const isValid = await this.userService.verifyToken(token);
 
     return !!isValid;
   }

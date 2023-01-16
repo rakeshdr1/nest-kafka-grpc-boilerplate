@@ -16,8 +16,8 @@ import { CONSTANTS } from '@shared/constants';
 import { CreateActivityRequest } from '@shared/dto/activity/create-activity.dto';
 import { UpdateActivityRequest } from '@shared/dto/activity/update-activity.dto';
 
-import { User } from '../auth/decorators/user.decorator';
-import { JwtGuard } from '../auth/guards/jwt.guard';
+import { User } from '../user/decorators/user.decorator';
+import { JwtGuard } from '../user/guards/jwt.guard';
 import { ActivityService } from './activity.service';
 
 @Controller('activity')

@@ -2,16 +2,16 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 
 import { parseAuthorizationHeaders } from '../utils/parse-auth-headers';
 
-import { AuthService } from '../auth.service';
+import { UserService } from '../user.service';
 
 @Injectable()
 export class ParseTokenPipe implements PipeTransform {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly userService: UserService) {}
 
   async transform(value: string, metadata: ArgumentMetadata) {
     const token = await parseAuthorizationHeaders(value);
 
-    const id = await this.authService.verifyToken(token);
+    const id = await this.userService.verifyToken(token);
 
     return id;
   }

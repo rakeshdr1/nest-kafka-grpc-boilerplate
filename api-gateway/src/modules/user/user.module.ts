@@ -2,19 +2,19 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'AUTH_GRPC_SERVICE',
+        name: 'USER_GRPC_SERVICE',
         transport: Transport.GRPC,
         options: {
-          package: 'auth',
+          package: 'user',
           url: `localhost:5005`,
-          protoPath: join(__dirname, '../../shared/_proto/auth.proto'),
+          protoPath: join(__dirname, '../../shared/_proto/user.proto'),
         },
       },
       {
@@ -32,8 +32,8 @@ import { AuthService } from './auth.service';
       },
     ]),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
-  exports: [AuthService],
+  controllers: [UserController],
+  providers: [UserService],
+  exports: [UserService],
 })
 export class AuthModule {}

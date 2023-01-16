@@ -8,31 +8,32 @@ import { TokensResponse } from '@shared/dto/auth/token-response.dto';
 import { IGrpcService } from './grpc.interface';
 
 @Injectable()
-export class AuthService {
-  @Inject('AUTH_GRPC_SERVICE')
+export class UserService {
+  @Inject('USER_GRPC_SERVICE')
   private client: ClientGrpc;
 
-  private authService: IGrpcService;
+  private userServiceClient: IGrpcService;
 
   onModuleInit() {
-    this.authService = this.client.getService<IGrpcService>('AuthController');
+    this.userServiceClient =
+      this.client.getService<IGrpcService>('UserService');
   }
 
   async signUp(data: SignUpRequest): Promise<TokensResponse> {
-    const tokens = await firstValueFrom(this.authService.create(data));
+    const tokens = await firstValueFrom(this.userServiceClient.create(data));
 
     return tokens;
   }
 
   async signIn(data: SignInRequest): Promise<TokensResponse> {
-    const tokens = await firstValueFrom(this.authService.signIn(data));
+    const tokens = await firstValueFrom(this.userServiceClient.signIn(data));
 
     return tokens;
   }
 
   async verifyToken(accessToken: string): Promise<string> {
     const data = await firstValueFrom(
-      this.authService.verifyToken({ accessToken }),
+      this.userServiceClient.verifyToken({ accessToken }),
     );
     return data.id;
   }

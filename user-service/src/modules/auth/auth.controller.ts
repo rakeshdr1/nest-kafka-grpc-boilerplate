@@ -10,17 +10,17 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @GrpcMethod('AuthController', 'create')
+  @GrpcMethod('UserService', 'create')
   async signUp(data: SignUpRequest) {
     return this.authService.signUp(data);
   }
 
-  @GrpcMethod('AuthController', 'signIn')
+  @GrpcMethod('UserService', 'signIn')
   async signIn(data: SignInRequest) {
     return this.authService.signIn(data);
   }
 
-  @GrpcMethod('AuthController', 'verifyToken')
+  @GrpcMethod('UserService', 'verifyToken')
   async verifyToken(accessTokenData: { accessToken: string }) {
     return this.authService.verifyAccessToken(accessTokenData.accessToken);
   }

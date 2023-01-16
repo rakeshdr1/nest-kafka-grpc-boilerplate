@@ -5,12 +5,12 @@ import { SignInRequest } from '@shared/dto/auth/sign-in.dto';
 import { SignUpRequest } from '@shared/dto/auth/sign-up.dto';
 import HttpOkResponse from '@shared/http/ok-response';
 
-import { AuthService } from './auth.service';
+import { UserService } from './user.service';
 
-@Controller('auth')
-@ApiTags('Auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+@Controller('user')
+@ApiTags('User')
+export class UserController {
+  constructor(private readonly authService: UserService) {}
 
   @Post('signUp')
   async signUp(@Body() data: SignUpRequest) {
