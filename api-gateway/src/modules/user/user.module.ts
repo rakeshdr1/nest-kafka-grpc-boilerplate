@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
-import { UserController } from './user.controller';
+import { AuthResolver } from './auth.resolver';
 import { UserService } from './user.service';
 
 @Module({
@@ -32,8 +32,7 @@ import { UserService } from './user.service';
       },
     ]),
   ],
-  controllers: [UserController],
-  providers: [UserService],
+  providers: [AuthResolver, UserService],
   exports: [UserService],
 })
 export class AuthModule {}

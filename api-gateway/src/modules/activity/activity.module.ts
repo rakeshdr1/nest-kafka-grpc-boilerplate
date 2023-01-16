@@ -4,6 +4,7 @@ import { join } from 'path';
 
 import { AuthModule } from '../user/user.module';
 import { ActivityController } from './activity.controller';
+import { ActivityResolver } from './activity.resolver';
 import { ActivityService } from './activity.service';
 
 @Module({
@@ -35,6 +36,6 @@ import { ActivityService } from './activity.service';
     AuthModule,
   ],
   controllers: [ActivityController],
-  providers: [ActivityService],
+  providers: [ActivityResolver, ActivityService],
 })
 export class ActivityModule {}
