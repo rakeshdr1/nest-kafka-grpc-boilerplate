@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { ClientGrpc, ClientKafka } from '@nestjs/microservices';
+import { Client, ClientGrpc, ClientKafka } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 import { CONSTANTS } from '@shared/constants';
@@ -7,16 +7,18 @@ import { CreateActivityRequest } from '@shared/dto/activity/create-activity.dto'
 import { UpdateActivityRequest } from '@shared/dto/activity/update-activity.dto';
 
 import { IGrpcService } from './grpc.interface';
+import { ActivityServiceClientOptions } from './activity-svc.options';
 
 @Injectable()
 export class ActivityService {
   private activityGrpcService: IGrpcService;
 
+  @Client(ActivityServiceClientOptions)
+  private readonly client: ClientGrpc;
+
   constructor(
     @Inject('ACTIVITY_SERVICE')
     private readonly activityService: ClientKafka,
-    @Inject('ACTIVITY_GRPC_SERVICE')
-    private readonly client: ClientGrpc,
   ) {}
 
   onModuleInit() {

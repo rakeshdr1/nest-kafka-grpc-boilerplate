@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
@@ -7,28 +8,23 @@ import { UserService } from './user.service';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'USER_GRPC_SERVICE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'user',
-          url: `localhost:5005`,
-          protoPath: join(__dirname, '../../shared/_proto/user.proto'),
-        },
-      },
+    ClientsModule.registerAsync([
       {
         name: 'AUTH-SERVICE',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: 'auth-service',
-            brokers: ['localhost:9092'],
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'auth-service',
+              brokers: [configService.get('KAFKA_BROKER_URL')],
+            },
+            consumer: {
+              groupId: 'auth-consumer',
+            },
           },
-          consumer: {
-            groupId: 'auth-consumer',
-          },
-        },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],

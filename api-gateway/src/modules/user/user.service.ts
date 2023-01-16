@@ -1,15 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
+import { Client, ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 import { SignInRequest } from '@shared/dto/auth/sign-in.dto';
 import { SignUpRequest } from '@shared/dto/auth/sign-up.dto';
 import { TokensResponse } from '@shared/dto/auth/token-response.dto';
 import { IGrpcService } from './grpc.interface';
+import { UserServiceClientOptions } from './user-svc.options';
 
 @Injectable()
 export class UserService {
-  @Inject('USER_GRPC_SERVICE')
+  @Client(UserServiceClientOptions)
   private client: ClientGrpc;
 
   private userServiceClient: IGrpcService;

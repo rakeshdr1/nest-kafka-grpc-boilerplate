@@ -22,8 +22,8 @@ message LoginUserDto{
 
 
 message LoginResponse{
-    string access_token=1;
-    string refresh_token=2;
+    string accessToken=1;
+    string refreshToken=2;
 }
 
 
@@ -33,7 +33,7 @@ message LoginUsetDto{
 }
 
 message Token{
-    string access_token=1;
+    string accessToken=1;
 }
 
 message UserId{
