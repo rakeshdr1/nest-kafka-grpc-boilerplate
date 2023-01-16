@@ -1,12 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientGrpc, ClientKafka } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 import { CONSTANTS } from '@shared/constants';
 import { CreateActivityRequest } from '@shared/dto/activity/create-activity.dto';
 import { UpdateActivityRequest } from '@shared/dto/activity/update-activity.dto';
-import HttpCreatedResponse from '@shared/http/created-response';
-import HttpOkResponse from '@shared/http/ok-response';
 
 import { IGrpcService } from './grpc.interface';
 
@@ -26,10 +24,6 @@ export class ActivityService {
       this.client.getService<IGrpcService>('ActivityController');
   }
 
-  accumulate(data) {
-    return this.activityGrpcService.accumulate({ data });
-  }
-
   async findAllByUser(userId: string) {
     return firstValueFrom(
       this.activityGrpcService.findAllByUser({ id: userId }),
@@ -42,7 +36,7 @@ export class ActivityService {
       JSON.stringify(data),
     );
 
-    return new HttpCreatedResponse();
+    return { success: true, statusCode: HttpStatus.OK };
   }
 
   async update(data: UpdateActivityRequest) {
@@ -53,7 +47,7 @@ export class ActivityService {
       JSON.stringify(data),
     );
 
-    return new HttpOkResponse();
+    return { success: true, statusCode: HttpStatus.OK };
   }
 
   async remove(id: string) {
@@ -61,6 +55,6 @@ export class ActivityService {
 
     this.activityService.emit(CONSTANTS.KAFKA_TOPICS.ACTIVITY.REMOVE, id);
 
-    return new HttpOkResponse();
+    return { success: true, statusCode: HttpStatus.OK };
   }
 }

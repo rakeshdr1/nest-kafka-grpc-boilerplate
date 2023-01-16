@@ -23,3 +23,12 @@ export class ActivityResponse {
   @Field({ nullable: true })
   updatedAt: Date;
 }
+
+@ObjectType({ description: 'success ' })
+export class SuccessResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  statusCode: number;
+}

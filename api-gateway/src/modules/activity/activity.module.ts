@@ -3,7 +3,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
 import { AuthModule } from '../user/user.module';
-import { ActivityController } from './activity.controller';
 import { ActivityResolver } from './activity.resolver';
 import { ActivityService } from './activity.service';
 
@@ -35,7 +34,7 @@ import { ActivityService } from './activity.service';
     ]),
     AuthModule,
   ],
-  controllers: [ActivityController],
+  controllers: [],
   providers: [ActivityResolver, ActivityService],
 })
 export class ActivityModule {}

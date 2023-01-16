@@ -5,16 +5,16 @@ import { Request } from 'express';
 import { parseAuthorizationHeaders } from '../utils/parse-auth-headers';
 
 import { UserService } from '../user.service';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
-export class JwtGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(private readonly userService: UserService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const ctx = GqlExecutionContext.create(context);
+    const { req } = ctx.getContext();
 
-    const token = await parseAuthorizationHeaders(
-      request.headers.authorization,
-    );
+    const token = await parseAuthorizationHeaders(req.headers.authorization);
 
     const isValid = await this.userService.verifyToken(token);
 
