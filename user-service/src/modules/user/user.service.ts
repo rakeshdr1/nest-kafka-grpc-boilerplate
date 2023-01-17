@@ -3,8 +3,8 @@ import { RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { SignInRequest } from '@shared/dto/auth/sign-in.dto';
-import { User } from '@shared/schemas/user.schema';
+import { SignInRequest } from '../auth/dto/sign-in.dto';
+import { User } from './schemas/user.schema';
 
 @Injectable()
 export class UserService {

@@ -17,7 +17,7 @@ async function bootstrap() {
     options: {
       url: configService.get('USER_SVC_URL'),
       package: 'user',
-      protoPath: join(__dirname, './shared/_proto/user.proto'),
+      protoPath: join(__dirname, './_proto/user.proto'),
       loader: {
         enums: String,
         objects: true,

@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as grpc from '@grpc/grpc-js';
 
-import { CreateActivityRequest } from 'src/shared/dto/activity/create-activity.dto';
-import { UpdateActivityRequest } from 'src/shared/dto/activity/update-activity.dto';
-import { Activity } from 'src/shared/schemas/activity.schema';
+import { CreateActivityRequest } from './dto/create-activity.dto';
+import { UpdateActivityRequest } from './dto/update-activity.dto';
+import { Activity } from 'src/modules/activity/schemas/activity.schema';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 
 const GrpcStatus = grpc.status;

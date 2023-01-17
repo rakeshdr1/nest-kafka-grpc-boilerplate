@@ -1,4 +1,4 @@
-import { Directive, Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({ description: 'activity ' })
 export class ActivityResponse {
@@ -25,10 +25,10 @@ export class ActivityResponse {
 }
 
 @ObjectType({ description: 'success ' })
-export class SuccessResponse {
+export class MessageResponse {
   @Field()
   success: boolean;
 
   @Field()
-  statusCode: number;
+  message: string;
 }

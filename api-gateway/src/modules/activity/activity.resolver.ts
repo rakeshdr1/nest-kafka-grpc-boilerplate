@@ -5,7 +5,7 @@ import { User } from '../user/decorators/user.decorator';
 import { AuthGuard } from '../user/guards/jwt.guard';
 import { ActivityService } from './activity.service';
 import { CreateActivityInput, UpdateActivityInput } from './dto/activity.dto';
-import { ActivityResponse, SuccessResponse } from './models/activity.model';
+import { ActivityResponse, MessageResponse } from './models/activity.model';
 
 @Resolver(() => ActivityResponse)
 export class ActivityResolver {
@@ -18,7 +18,7 @@ export class ActivityResolver {
     return activities;
   }
 
-  @Mutation(() => SuccessResponse)
+  @Mutation(() => MessageResponse)
   async createActivity(
     @Args('input') createActivityInput: CreateActivityInput,
     @User() userId,
@@ -29,7 +29,7 @@ export class ActivityResolver {
     });
   }
 
-  @Mutation(() => SuccessResponse)
+  @Mutation(() => MessageResponse)
   @UseGuards(AuthGuard)
   async updateActivity(
     @Args('input') updateActivityInput: UpdateActivityInput,
@@ -39,7 +39,7 @@ export class ActivityResolver {
     });
   }
 
-  @Mutation(() => SuccessResponse)
+  @Mutation(() => MessageResponse)
   @UseGuards(AuthGuard)
   async deleteActivity(@Args('id') id: string) {
     return this.activityService.remove(id);

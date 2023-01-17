@@ -1,10 +1,10 @@
 import { Controller } from '@nestjs/common';
 import { EventPattern, GrpcMethod, Payload } from '@nestjs/microservices';
 
-import { CONSTANTS } from 'src/shared/constants';
-import { CreateActivityRequest } from 'src/shared/dto/activity/create-activity.dto';
-import { UpdateActivityRequest } from 'src/shared/dto/activity/update-activity.dto';
-import { ParseMessagePipe } from 'src/shared/pipes/parse-message.pipe';
+import { CONSTANTS } from '@shared/constants';
+import { CreateActivityRequest } from './dto/create-activity.dto';
+import { UpdateActivityRequest } from './dto/update-activity.dto';
+import { ParseMessagePipe } from '@shared/pipes/parse-message.pipe';
 import { ActivityService } from './activity.service';
 
 @Controller('activity')

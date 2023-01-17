@@ -4,17 +4,19 @@ import { IsDateString, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateActivityInput {
-  @Field()
+  readonly user?: string;
+
+  @Field({ description: 'enter activity name' })
   @ApiProperty()
   @IsString()
   readonly name: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'enter start time' })
   @IsOptional()
   @IsDateString()
   startTime: Date;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'enter end time' })
   @IsOptional()
   @IsDateString()
   endTime: Date;
@@ -22,22 +24,22 @@ export class CreateActivityInput {
 
 @InputType()
 export class UpdateActivityInput {
-  @Field()
+  @Field({ description: 'enter activity id' })
   @ApiProperty()
   @IsMongoId()
   id: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'enter activity name' })
   @IsOptional()
   @IsString()
   readonly name: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'enter start time' })
   @IsOptional()
   @IsDateString()
   startTime: Date;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'enter end time' })
   @IsOptional()
   @IsDateString()
   endTime: Date;

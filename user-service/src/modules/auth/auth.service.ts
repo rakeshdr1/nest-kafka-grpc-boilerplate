@@ -5,13 +5,12 @@ import { ClientKafka, RpcException } from '@nestjs/microservices';
 import * as grpc from '@grpc/grpc-js';
 import * as bcrypt from 'bcryptjs';
 
-import { TokensResponse } from '@shared/dto/auth/token-response.dto';
-import { User } from '@shared/schemas/user.schema';
-import { SignInRequest } from '@shared/dto/auth/sign-in.dto';
-import { SignUpRequest } from '@shared/dto/auth/sign-up.dto';
+import { TokensResponse } from './dto/token-response.dto';
+import { User } from '../user/schemas/user.schema';
+import { SignInRequest } from './dto/sign-in.dto';
+import { SignUpRequest } from './dto/sign-up.dto';
 import { CONSTANTS } from '@shared/constants';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
-
 import { UserService } from '../user/user.service';
 
 const GrpcStatus = grpc.status;

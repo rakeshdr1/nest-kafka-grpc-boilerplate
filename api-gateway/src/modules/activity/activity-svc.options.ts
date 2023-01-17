@@ -6,7 +6,7 @@ export const ActivityServiceClientOptions: ClientOptions = {
   options: {
     url: `${process.env.ACTIVITY_SVC_URL}`,
     package: 'activity',
-    protoPath: join(__dirname, '../../shared/_proto/activity.proto'),
+    protoPath: join(__dirname, '../../_proto/activity.proto'),
     loader: {
       enums: String,
       objects: true,

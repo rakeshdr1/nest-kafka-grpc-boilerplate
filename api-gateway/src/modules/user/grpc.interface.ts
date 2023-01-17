@@ -1,16 +1,16 @@
 import { Observable } from 'rxjs';
 
-import { SignInRequest } from '@shared/dto/auth/sign-in.dto';
-import { SignUpRequest } from '@shared/dto/auth/sign-up.dto';
+import { SignInInput } from './dto/sign-in.dto';
+import { SignUpInput } from './dto/sign-up.dto';
 
 export interface IGrpcService {
-  verifyToken(token: { accessToken: string }): Observable<any>;
+  verifyToken(token: { accessToken: string }): Observable<{ id: string }>;
 
   signIn(
-    data: SignInRequest,
+    data: SignInInput,
   ): Observable<{ accessToken: string; refreshToken: string }>;
 
   create(
-    data: SignUpRequest,
+    data: SignUpInput,
   ): Observable<{ accessToken: string; refreshToken: string }>;
 }

@@ -1,9 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 
-import { SignInRequest } from '@shared/dto/auth/sign-in.dto';
-import { SignUpRequest } from '@shared/dto/auth/sign-up.dto';
-
+import { SignInRequest } from './dto/sign-in.dto';
+import { SignUpRequest } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
