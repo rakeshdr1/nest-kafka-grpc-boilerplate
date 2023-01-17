@@ -12,6 +12,12 @@ import { SignUpRequest } from './dto/sign-up.dto';
 import { CONSTANTS } from '@shared/constants';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserService } from '../user/user.service';
+import {
+  DeviceSessionExpired,
+  InvalidCredentials,
+  UserAlreadyExists,
+  UserNotExist,
+} from '@shared/http/message';
 
 const GrpcStatus = grpc.status;
 
@@ -31,7 +37,7 @@ export class AuthService {
 
     if (userData) {
       return this.responseHandlerService.response(
-        'User already exists',
+        UserAlreadyExists,
         HttpStatus.CONFLICT,
         GrpcStatus.ALREADY_EXISTS,
         null,
@@ -66,7 +72,7 @@ export class AuthService {
 
     if (!user) {
       return this.responseHandlerService.response(
-        'User does not exist',
+        UserNotExist,
         HttpStatus.NOT_FOUND,
         GrpcStatus.NOT_FOUND,
         null,
@@ -77,7 +83,7 @@ export class AuthService {
 
     if (!passwordMatch) {
       return this.responseHandlerService.response(
-        'Incorrect password',
+        InvalidCredentials,
         HttpStatus.UNAUTHORIZED,
         GrpcStatus.UNAUTHENTICATED,
         null,
@@ -96,7 +102,7 @@ export class AuthService {
       const user = await this.userService.findOne(payload.id);
       if (!user) {
         return this.responseHandlerService.response(
-          'User does not exist',
+          UserAlreadyExists,
           HttpStatus.NOT_FOUND,
           GrpcStatus.NOT_FOUND,
           null,
@@ -107,7 +113,7 @@ export class AuthService {
         user.lastLoginTime.getTime() > new Date(payload.loginTime).getTime()
       ) {
         return this.responseHandlerService.response(
-          'Device Session Expired',
+          DeviceSessionExpired,
           HttpStatus.UNAUTHORIZED,
           GrpcStatus.UNAUTHENTICATED,
           null,

@@ -1,8 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-import { Request } from 'express';
-
 import { ParseTokenPipe } from '../pipes/parse-token.pipe';
 
 const GetToken = createParamDecorator((_, context: ExecutionContext) => {

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';

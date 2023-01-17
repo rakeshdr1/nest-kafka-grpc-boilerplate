@@ -5,8 +5,9 @@ import * as grpc from '@grpc/grpc-js';
 
 import { CreateActivityRequest } from './dto/create-activity.dto';
 import { UpdateActivityRequest } from './dto/update-activity.dto';
-import { Activity } from 'src/modules/activity/schemas/activity.schema';
+import { Activity } from './schemas/activity.schema';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
+import { ActivityNotExists } from '@shared/http/message';
 
 const GrpcStatus = grpc.status;
 
@@ -32,7 +33,7 @@ export class ActivityService {
 
     if (!activity) {
       return this.responseHandlerService.response(
-        'Activity does not exist',
+        ActivityNotExists,
         HttpStatus.NOT_FOUND,
         GrpcStatus.NOT_FOUND,
         null,

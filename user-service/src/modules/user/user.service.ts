@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as grpc from '@grpc/grpc-js';
 
 import { SignInRequest } from '../auth/dto/sign-in.dto';
 import { User } from './schemas/user.schema';
+import { ResponseHandlerService } from '@shared/handlers/response-handlers';
+import { UserAlreadyExists } from '@shared/http/message';
+
+const GrpcStatus = grpc.status;
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    private readonly responseHandlerService: ResponseHandlerService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -20,7 +25,14 @@ export class UserService {
   async findOne(id: string): Promise<User> {
     const user = await this.userModel.findOne({ id });
 
-    if (!user) throw new RpcException('User does not exist');
+    if (!user) {
+      return this.responseHandlerService.response(
+        UserAlreadyExists,
+        HttpStatus.NOT_FOUND,
+        GrpcStatus.NOT_FOUND,
+        null,
+      );
+    }
 
     return user;
   }
