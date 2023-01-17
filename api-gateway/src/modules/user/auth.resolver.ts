@@ -11,22 +11,12 @@ export class AuthResolver {
 
   @Mutation(() => AuthResponse)
   async signUp(@Args('input') data: SignUpInput) {
-    data.email = data.email.toLowerCase();
-    const { accessToken, refreshToken } = await this.userService.signUp(data);
-    return {
-      accessToken,
-      refreshToken,
-    };
+    return this.userService.signUp(data);
   }
 
   @Mutation(() => AuthResponse)
   async signIn(@Args('input') data: SignInInput) {
-    data.email = data.email.toLowerCase();
-    const { accessToken, refreshToken } = await this.userService.signIn(data);
-    return {
-      accessToken,
-      refreshToken,
-    };
+    return this.userService.signIn(data);
   }
 
   @Query(() => String)

@@ -21,15 +21,11 @@ export class UserService {
   }
 
   async signUp(data: SignUpInput): Promise<AuthResponse> {
-    const tokens = await firstValueFrom(this.userServiceClient.create(data));
-
-    return tokens;
+    return firstValueFrom(this.userServiceClient.create(data));
   }
 
   async signIn(data: SignInInput): Promise<AuthResponse> {
-    const tokens = await firstValueFrom(this.userServiceClient.signIn(data));
-
-    return tokens;
+    return firstValueFrom(this.userServiceClient.signIn(data));
   }
 
   async verifyToken(accessToken: string): Promise<string> {

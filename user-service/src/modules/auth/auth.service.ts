@@ -56,7 +56,7 @@ export class AuthService {
     );
 
     const tokens = await this.generateTokens(user);
-    return tokens;
+    return { user, ...tokens };
   }
 
   async signIn(data: SignInRequest): Promise<TokensResponse> {
@@ -64,7 +64,7 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user);
 
-    return tokens;
+    return { user, ...tokens };
   }
 
   async verifyUser(email: string, password: string): Promise<User> {
@@ -126,7 +126,7 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(user: User): Promise<TokensResponse> {
+  private async generateTokens(user: User) {
     const { _id } = user;
     const loginTime = new Date();
     const payload = { id: _id, loginTime };

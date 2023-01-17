@@ -22,7 +22,7 @@ import { AuthService } from './auth.service';
         options: {
           client: {
             clientId: 'notification',
-            brokers: ['localhost:9092'],
+            brokers: [process.env.KAFKA_BROKER_URL],
           },
           consumer: {
             groupId: 'notification-consumer',

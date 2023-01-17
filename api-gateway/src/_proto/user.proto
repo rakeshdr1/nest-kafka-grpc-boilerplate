@@ -24,12 +24,18 @@ message LoginUserDto{
 message LoginResponse{
     string accessToken=1;
     string refreshToken=2;
+    User user=3;
 }
 
 
-message LoginUsetDto{
-    string email=1;
-    string password=2;
+message User{
+    string _id=1;
+    string email=2;
+    string password=3;
+    string name=4;
+    string updatedAt = 5;
+    string createdAt = 6;
+    string lastLoginTime=7;
 }
 
 message Token{
