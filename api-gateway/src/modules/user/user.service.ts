@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Client, ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
-import { SignInInput } from './dto/sign-in.dto';
+import { ClientRequestInfo, SignInInput } from './dto/sign-in.dto';
 import { SignUpInput } from './dto/sign-up.dto';
 import { IGrpcService } from './grpc.interface';
 import { AuthResponse } from './models/auth.model';
@@ -20,17 +20,36 @@ export class UserService {
       this.client.getService<IGrpcService>('UserService');
   }
 
-  async signUp(data: SignUpInput): Promise<AuthResponse> {
-    return firstValueFrom(this.userServiceClient.create(data));
+  async signUp(signUpInput: SignUpInput, request): Promise<AuthResponse> {
+    return firstValueFrom(
+      this.userServiceClient.create({
+        signUpInput,
+        requestInfo: {
+          browserId: request.header('browserId'),
+          userAgent: request.header('User-Agent'),
+        },
+      }),
+    );
   }
 
-  async signIn(data: SignInInput): Promise<AuthResponse> {
-    return firstValueFrom(this.userServiceClient.signIn(data));
+  async signIn(signInInput: SignInInput, request): Promise<AuthResponse> {
+    return firstValueFrom(
+      this.userServiceClient.signIn({
+        signInInput,
+        requestInfo: {
+          browserId: request.header('browserId'),
+          userAgent: request.header('User-Agent'),
+        },
+      }),
+    );
   }
 
-  async verifyToken(accessToken: string): Promise<string> {
+  async verifyToken(
+    accessToken: string,
+    requestInfo: ClientRequestInfo,
+  ): Promise<string> {
     const { id } = await firstValueFrom(
-      this.userServiceClient.verifyToken({ accessToken }),
+      this.userServiceClient.verifyToken({ accessToken, requestInfo }),
     );
     return id;
   }

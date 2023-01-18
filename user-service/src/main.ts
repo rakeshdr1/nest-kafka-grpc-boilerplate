@@ -33,6 +33,7 @@ async function bootstrap() {
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.KAFKA,
+
     options: {
       client: {
         brokers: [configService.get('KAFKA_BROKER_URL')],

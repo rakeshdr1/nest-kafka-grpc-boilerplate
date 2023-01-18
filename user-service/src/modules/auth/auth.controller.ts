@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 
-import { SignInRequest } from './dto/sign-in.dto';
-import { SignUpRequest } from './dto/sign-up.dto';
+import { ClientRequestInfo, SignInInput } from './dto/sign-in.dto';
+import { SignUpInput } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -10,17 +10,29 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @GrpcMethod('UserService', 'create')
-  async signUp(data: SignUpRequest) {
-    return this.authService.signUp(data);
+  async signUp(data: {
+    signUpInput: SignUpInput;
+    requestInfo: ClientRequestInfo;
+  }) {
+    const { signUpInput, requestInfo } = data;
+    return this.authService.signUp(signUpInput, requestInfo);
   }
 
   @GrpcMethod('UserService', 'signIn')
-  async signIn(data: SignInRequest) {
-    return this.authService.signIn(data);
+  async signIn(data: {
+    signInInput: SignInInput;
+    requestInfo: ClientRequestInfo;
+  }) {
+    const { signInInput, requestInfo } = data;
+    return this.authService.signIn(signInInput, requestInfo);
   }
 
   @GrpcMethod('UserService', 'verifyToken')
-  async verifyToken(accessTokenData: { accessToken: string }) {
-    return this.authService.verifyAccessToken(accessTokenData.accessToken);
+  async verifyToken(data: {
+    accessToken: string;
+    requestInfo: ClientRequestInfo;
+  }) {
+    const { accessToken, requestInfo } = data;
+    return this.authService.verifyAccessToken(accessToken, requestInfo);
   }
 }

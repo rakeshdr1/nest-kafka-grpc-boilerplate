@@ -3,10 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as grpc from '@grpc/grpc-js';
 
-import { SignInRequest } from '../auth/dto/sign-in.dto';
 import { User } from './schemas/user.schema';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserAlreadyExists } from '@shared/http/message';
+import { SignUpInput } from '../auth/dto/sign-up.dto';
 
 const GrpcStatus = grpc.status;
 
@@ -43,7 +43,7 @@ export class UserService {
     return user;
   }
 
-  async create(data: SignInRequest): Promise<User> {
+  async create(data: SignUpInput): Promise<User> {
     const user = await this.userModel.create(data);
 
     return user;

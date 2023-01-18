@@ -14,3 +14,8 @@ export class SignInInput {
   @MinLength(8)
   readonly password: string;
 }
+
+export interface ClientRequestInfo {
+  browserId: string;
+  userAgent: string;
+}
