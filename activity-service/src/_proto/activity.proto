@@ -6,7 +6,6 @@ package activity;
 service ActivityController {
     rpc findAllByUser (UserId) returns (ListActivity);
     rpc findById (ActivityId) returns (Activity);
-
 }
 
 message UserId{

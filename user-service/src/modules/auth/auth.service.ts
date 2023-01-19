@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ClientKafka, RpcException } from '@nestjs/microservices';
+import { ClientKafka } from '@nestjs/microservices';
 import * as grpc from '@grpc/grpc-js';
 import * as bcrypt from 'bcryptjs';
 
@@ -105,51 +105,54 @@ export class AuthService {
   }
 
   async verifyAccessToken(accessToken: string, requestInfo: ClientRequestInfo) {
+    let payload;
     try {
-      const payload = this.jwtService.verify(accessToken, {
+      payload = await this.jwtService.verifyAsync(accessToken, {
         secret: this.configService.get('JWT_ACCESS_SECRET'),
       });
-
-      const user = await this.userService.findOne(payload.id);
-      if (!user) {
-        return this.responseHandlerService.response(
-          UserAlreadyExists,
-          HttpStatus.NOT_FOUND,
-          GrpcStatus.NOT_FOUND,
-          null,
-        );
-      }
-
-      const sessionInfo = await this.authTokenModel.findOne({
-        authToken: accessToken,
-        ...requestInfo,
-        valid: true,
-      });
-
-      if (!sessionInfo) {
-        return this.responseHandlerService.response(
-          DeviceSessionExpired,
-          HttpStatus.UNAUTHORIZED,
-          GrpcStatus.UNAUTHENTICATED,
-          null,
-        );
-      }
-
-      if (
-        user.lastLoginTime.getTime() > new Date(payload.loginTime).getTime()
-      ) {
-        return this.responseHandlerService.response(
-          DeviceSessionExpired,
-          HttpStatus.UNAUTHORIZED,
-          GrpcStatus.UNAUTHENTICATED,
-          null,
-        );
-      }
-
-      return { id: payload.id };
     } catch (err) {
-      throw new RpcException(err.message);
+      return this.responseHandlerService.response(
+        err.message,
+        HttpStatus.UNAUTHORIZED,
+        GrpcStatus.UNAUTHENTICATED,
+        null,
+      );
     }
+    const user = await this.userService.findOne(payload.id);
+    if (!user) {
+      return this.responseHandlerService.response(
+        UserAlreadyExists,
+        HttpStatus.NOT_FOUND,
+        GrpcStatus.NOT_FOUND,
+        null,
+      );
+    }
+
+    const sessionInfo = await this.authTokenModel.findOne({
+      authToken: accessToken,
+      ...requestInfo,
+      valid: true,
+    });
+
+    if (!sessionInfo) {
+      return this.responseHandlerService.response(
+        DeviceSessionExpired,
+        HttpStatus.UNAUTHORIZED,
+        GrpcStatus.UNAUTHENTICATED,
+        null,
+      );
+    }
+
+    if (user.lastLoginTime.getTime() > new Date(payload.loginTime).getTime()) {
+      return this.responseHandlerService.response(
+        DeviceSessionExpired,
+        HttpStatus.UNAUTHORIZED,
+        GrpcStatus.UNAUTHENTICATED,
+        null,
+      );
+    }
+
+    return { id: payload.id };
   }
 
   private async generateTokens(user: User, requestInfo: ClientRequestInfo) {

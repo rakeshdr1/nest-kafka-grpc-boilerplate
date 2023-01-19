@@ -1,7 +1,8 @@
 import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 
-import { AuthGuard, GetUserId } from '../user/guards/jwt.guard';
+import { GetUserId } from '../user/decorators/user.decorator';
+import { AuthGuard } from '../user/guards/jwt.guard';
 import { ActivityService } from './activity.service';
 import { CreateActivityInput, UpdateActivityInput } from './dto/activity.dto';
 import { ActivityResponse, MessageResponse } from './models/activity.model';
@@ -18,6 +19,7 @@ export class ActivityResolver {
   }
 
   @Mutation(() => MessageResponse)
+  @UseGuards(AuthGuard)
   async createActivity(
     @Args('input') createActivityInput: CreateActivityInput,
     @GetUserId() userId,
