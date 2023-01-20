@@ -2,14 +2,19 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserModule } from '../user/user.module';
+import { AuthToken, AuthTokenSchema } from './auth-token.schema';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
   imports: [
+    MongooseModule.forFeature([
+      { name: AuthToken.name, schema: AuthTokenSchema },
+    ]),
     UserModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,

@@ -1,13 +1,22 @@
 import { Observable } from 'rxjs';
 
-import { SignInInput } from './dto/sign-in.dto';
+import { ClientRequestInfo, SignInInput } from './dto/sign-in.dto';
 import { SignUpInput } from './dto/sign-up.dto';
 import { AuthResponse } from './models/auth.model';
 
 export interface IGrpcService {
-  verifyToken(token: { accessToken: string }): Observable<{ id: string }>;
+  verifyToken(arg: {
+    accessToken: string;
+    requestInfo: ClientRequestInfo;
+  }): Observable<{ id: string }>;
 
-  signIn(data: SignInInput): Observable<AuthResponse>;
+  signIn(arg: {
+    signInInput: SignInInput;
+    requestInfo: ClientRequestInfo;
+  }): Observable<AuthResponse>;
 
-  create(data: SignUpInput): Observable<AuthResponse>;
+  create(arg: {
+    signUpInput: SignUpInput;
+    requestInfo: ClientRequestInfo;
+  }): Observable<AuthResponse>;
 }

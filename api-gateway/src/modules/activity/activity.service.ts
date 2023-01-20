@@ -15,8 +15,8 @@ export class ActivityService {
   private readonly client: ClientGrpc;
 
   constructor(
-    @Inject('ACTIVITY_SERVICE')
-    private readonly activityService: ClientKafka,
+    @Inject('ACTIVITY_KAFKA_SERVICE')
+    private readonly activityKafkaService: ClientKafka,
   ) {}
 
   onModuleInit() {
@@ -31,7 +31,7 @@ export class ActivityService {
   }
 
   async create(data: CreateActivityInput) {
-    this.activityService.emit(
+    this.activityKafkaService.emit(
       CONSTANTS.KAFKA_TOPICS.ACTIVITY.CREATE,
       JSON.stringify(data),
     );
@@ -42,7 +42,7 @@ export class ActivityService {
   async update(data: UpdateActivityInput) {
     await firstValueFrom(this.activityGrpcService.findById({ id: data.id }));
 
-    this.activityService.emit(
+    this.activityKafkaService.emit(
       CONSTANTS.KAFKA_TOPICS.ACTIVITY.UPDATE,
       JSON.stringify(data),
     );
@@ -53,7 +53,7 @@ export class ActivityService {
   async remove(id: string) {
     await firstValueFrom(this.activityGrpcService.findById({ id }));
 
-    this.activityService.emit(CONSTANTS.KAFKA_TOPICS.ACTIVITY.REMOVE, id);
+    this.activityKafkaService.emit(CONSTANTS.KAFKA_TOPICS.ACTIVITY.REMOVE, id);
 
     return { success: true, message: 'Activity removed' };
   }

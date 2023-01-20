@@ -10,14 +10,24 @@ service UserService {
 
 
 message CreateUserDto{
+    SignUpInput signUpInput=1;
+    ClientRequestInfo requestInfo=2;
+}
+
+message SignUpInput{
     string email=1;
     string name=2;
     string password=3;
 }
 
 message LoginUserDto{
+    SignInInput signInInput=1;
+    ClientRequestInfo requestInfo=2;
+}
+
+message SignInInput{
     string email=1;
-    string password=3;
+    string password=2;
 }
 
 
@@ -40,10 +50,16 @@ message User{
 
 message Token{
     string accessToken=1;
+    ClientRequestInfo requestInfo=2;
 }
 
 message UserId{
     string id=1;
+}
+
+message ClientRequestInfo{
+    string userAgent=1;
+    string browserId=2;
 }
 
 

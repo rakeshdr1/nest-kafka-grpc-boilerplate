@@ -1,14 +1,13 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ClientKafka, RpcException } from '@nestjs/microservices';
+import { ClientKafka } from '@nestjs/microservices';
 import * as grpc from '@grpc/grpc-js';
 import * as bcrypt from 'bcryptjs';
 
 import { TokensResponse } from './dto/token-response.dto';
 import { User } from '../user/schemas/user.schema';
-import { SignInRequest } from './dto/sign-in.dto';
-import { SignUpRequest } from './dto/sign-up.dto';
+import { ClientRequestInfo, SignInInput } from './dto/sign-in.dto';
 import { CONSTANTS } from '@shared/constants';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserService } from '../user/user.service';
@@ -18,12 +17,18 @@ import {
   UserAlreadyExists,
   UserNotExist,
 } from '@shared/http/message';
+import { InjectModel } from '@nestjs/mongoose';
+import { AuthToken } from './auth-token.schema';
+import { Model } from 'mongoose';
+import { SignUpInput } from './dto/sign-up.dto';
 
 const GrpcStatus = grpc.status;
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectModel(AuthToken.name)
+    private readonly authTokenModel: Model<AuthToken>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -32,8 +37,11 @@ export class AuthService {
     private readonly responseHandlerService: ResponseHandlerService,
   ) {}
 
-  async signUp(data: SignUpRequest): Promise<TokensResponse> {
-    const userData = await this.userService.findOneByEmail(data.email);
+  async signUp(
+    signUpInput: SignUpInput,
+    requestInfo: ClientRequestInfo,
+  ): Promise<TokensResponse> {
+    const userData = await this.userService.findOneByEmail(signUpInput.email);
 
     if (userData) {
       return this.responseHandlerService.response(
@@ -44,25 +52,28 @@ export class AuthService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 7);
+    const hashedPassword = await bcrypt.hash(signUpInput.password, 7);
     const user = await this.userService.create({
-      ...data,
+      ...signUpInput,
       password: hashedPassword,
     });
 
     this.notificationClient.emit(
       CONSTANTS.KAFKA_TOPICS.USER.USER_CREATED,
-      JSON.stringify(data),
+      JSON.stringify(signUpInput),
     );
 
-    const tokens = await this.generateTokens(user);
+    const tokens = await this.generateTokens(user, requestInfo);
     return { user, ...tokens };
   }
 
-  async signIn(data: SignInRequest): Promise<TokensResponse> {
-    const user = await this.verifyUser(data.email, data.password);
+  async signIn(
+    signInInput: SignInInput,
+    requestInfo: ClientRequestInfo,
+  ): Promise<TokensResponse> {
+    const user = await this.verifyUser(signInInput.email, signInInput.password);
 
-    const tokens = await this.generateTokens(user);
+    const tokens = await this.generateTokens(user, requestInfo);
 
     return { user, ...tokens };
   }
@@ -93,40 +104,58 @@ export class AuthService {
     return user;
   }
 
-  async verifyAccessToken(accessToken: string) {
+  async verifyAccessToken(accessToken: string, requestInfo: ClientRequestInfo) {
+    let payload;
     try {
-      const payload = this.jwtService.verify(accessToken, {
+      payload = await this.jwtService.verifyAsync(accessToken, {
         secret: this.configService.get('JWT_ACCESS_SECRET'),
       });
-
-      const user = await this.userService.findOne(payload.id);
-      if (!user) {
-        return this.responseHandlerService.response(
-          UserAlreadyExists,
-          HttpStatus.NOT_FOUND,
-          GrpcStatus.NOT_FOUND,
-          null,
-        );
-      }
-
-      if (
-        user.lastLoginTime.getTime() > new Date(payload.loginTime).getTime()
-      ) {
-        return this.responseHandlerService.response(
-          DeviceSessionExpired,
-          HttpStatus.UNAUTHORIZED,
-          GrpcStatus.UNAUTHENTICATED,
-          null,
-        );
-      }
-
-      return { id: payload.id };
     } catch (err) {
-      throw new RpcException(err.message);
+      return this.responseHandlerService.response(
+        err.message,
+        HttpStatus.UNAUTHORIZED,
+        GrpcStatus.UNAUTHENTICATED,
+        null,
+      );
     }
+    const user = await this.userService.findOne(payload.id);
+    if (!user) {
+      return this.responseHandlerService.response(
+        UserAlreadyExists,
+        HttpStatus.NOT_FOUND,
+        GrpcStatus.NOT_FOUND,
+        null,
+      );
+    }
+
+    const sessionInfo = await this.authTokenModel.findOne({
+      authToken: accessToken,
+      ...requestInfo,
+      valid: true,
+    });
+
+    if (!sessionInfo) {
+      return this.responseHandlerService.response(
+        DeviceSessionExpired,
+        HttpStatus.UNAUTHORIZED,
+        GrpcStatus.UNAUTHENTICATED,
+        null,
+      );
+    }
+
+    if (user.lastLoginTime.getTime() > new Date(payload.loginTime).getTime()) {
+      return this.responseHandlerService.response(
+        DeviceSessionExpired,
+        HttpStatus.UNAUTHORIZED,
+        GrpcStatus.UNAUTHENTICATED,
+        null,
+      );
+    }
+
+    return { id: payload.id };
   }
 
-  private async generateTokens(user: User) {
+  private async generateTokens(user: User, requestInfo: ClientRequestInfo) {
     const { _id } = user;
     const loginTime = new Date();
     const payload = { id: _id, loginTime };
@@ -143,6 +172,12 @@ export class AuthService {
     const tokens = { accessToken, refreshToken };
     user.lastLoginTime = loginTime;
     await user.save();
+
+    await this.authTokenModel.create({
+      user: user._id,
+      authToken: accessToken,
+      ...requestInfo,
+    });
 
     return tokens;
   }

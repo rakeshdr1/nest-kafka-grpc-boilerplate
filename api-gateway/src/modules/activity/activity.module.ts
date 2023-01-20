@@ -10,7 +10,7 @@ import { ActivityService } from './activity.service';
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'ACTIVITY_SERVICE',
+        name: 'ACTIVITY_KAFKA_SERVICE',
         imports: [ConfigModule],
         useFactory: async (configService: ConfigService) => ({
           transport: Transport.KAFKA,

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
-export class SignUpRequest {
+export class SignUpInput {
   @ApiProperty()
   readonly name: string;
 
