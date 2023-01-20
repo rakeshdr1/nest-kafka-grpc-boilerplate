@@ -4,17 +4,17 @@ import { Transform } from 'class-transformer';
 
 @InputType()
 export class SignUpInput {
-  @Field()
+  @Field({ description: 'enter name' })
   @IsString()
   name: string;
 
-  @Field()
+  @Field({ description: 'enter email' })
   @IsEmail()
   @Transform(({ value }) => value.trim().toLowerCase())
   email: string;
 
-  @Field()
+  @Field({ description: 'enter password' })
   @IsString()
   @MinLength(8)
-  readonly password: string;
+  password: string;
 }

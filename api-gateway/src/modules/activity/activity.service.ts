@@ -6,6 +6,11 @@ import { CONSTANTS } from '@shared/constants';
 import { IGrpcService } from './grpc.interface';
 import { ActivityServiceClientOptions } from './activity-svc.options';
 import { CreateActivityInput, UpdateActivityInput } from './dto/activity.dto';
+import {
+  ActivityCreated,
+  ActivityDeleted,
+  ActivityUpdated,
+} from '@shared/http/message';
 
 @Injectable()
 export class ActivityService {
@@ -36,25 +41,21 @@ export class ActivityService {
       JSON.stringify(data),
     );
 
-    return { success: true, message: 'Activity created' };
+    return { success: true, message: ActivityCreated };
   }
 
   async update(data: UpdateActivityInput) {
-    await firstValueFrom(this.activityGrpcService.findById({ id: data.id }));
-
     this.activityService.emit(
       CONSTANTS.KAFKA_TOPICS.ACTIVITY.UPDATE,
       JSON.stringify(data),
     );
 
-    return { success: true, message: 'Activity updated' };
+    return { success: true, message: ActivityUpdated };
   }
 
   async remove(id: string) {
-    await firstValueFrom(this.activityGrpcService.findById({ id }));
-
     this.activityService.emit(CONSTANTS.KAFKA_TOPICS.ACTIVITY.REMOVE, id);
 
-    return { success: true, message: 'Activity removed' };
+    return { success: true, message: ActivityDeleted };
   }
 }

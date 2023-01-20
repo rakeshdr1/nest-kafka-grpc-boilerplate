@@ -1,12 +1,17 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-import { ParseTokenPipe } from '../pipes/parse-token.pipe';
+export const GetRequest = createParamDecorator(
+  (_data, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
+  },
+);
 
-const GetToken = createParamDecorator((_, context: ExecutionContext) => {
-  const ctx = GqlExecutionContext.create(context);
-  const { req } = ctx.getContext();
-  return req.headers.authorization;
-});
-
-export const User = () => GetToken(ParseTokenPipe);
+export const GetUserId = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context);
+    const req = ctx.getContext().req;
+    return req.userId;
+  },
+);

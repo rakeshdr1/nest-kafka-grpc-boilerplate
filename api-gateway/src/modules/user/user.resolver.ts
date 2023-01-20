@@ -5,8 +5,8 @@ import { SignUpInput } from './dto/sign-up.dto';
 import { AuthResponse } from './models/auth.model';
 import { UserService } from './user.service';
 
-@Resolver('auth')
-export class AuthResolver {
+@Resolver('user')
+export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Mutation(() => AuthResponse)

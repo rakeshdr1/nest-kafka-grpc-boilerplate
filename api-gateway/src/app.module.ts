@@ -1,28 +1,43 @@
-import { Module } from '@nestjs/common';
+import { HttpStatus, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { join } from 'path';
 
 import { ActivityModule } from './modules/activity/activity.module';
 import { AuthModule } from './modules/user/user.module';
+import { envSchema } from '@shared/env-schema/env-schema';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: envSchema,
+    }),
+
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      debug: false,
-      autoSchemaFile: true,
-      playground: true,
-      formatError: (error: any) => {
-        return error?.extensions?.exception?.details
-          ? JSON.parse(error?.extensions?.exception?.details)
-          : {
-              name: error?.extensions?.response?.error || 'InternalServerError',
-              status: error?.extensions?.response?.statusCode || 500,
-              message: error?.extensions?.response?.message || error,
-            };
-      },
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        autoSchemaFile: join(process.cwd(), 'schema.gql'),
+        introspection: configService.get('ENV') === 'production' ? false : true,
+        playground: configService.get('ENV') === 'production' ? false : true,
+        context: async ({ req }) => ({ req }),
+        debug: false,
+        formatError: (error: any) => {
+          return error?.extensions?.exception?.details
+            ? JSON.parse(error?.extensions?.exception?.details)
+            : {
+                name:
+                  error?.extensions?.response?.error || 'InternalServerError',
+                status:
+                  error?.extensions?.response?.statusCode ||
+                  HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error?.extensions?.response?.message || error,
+              };
+        },
+      }),
     }),
     AuthModule,
     ActivityModule,
