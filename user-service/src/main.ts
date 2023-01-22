@@ -38,7 +38,7 @@ async function bootstrap() {
         brokers: [configService.get('KAFKA_BROKER_URL')],
       },
       consumer: {
-        groupId: 'auth-consumer',
+        groupId: 'user-consumer',
       },
     },
   });

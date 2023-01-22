@@ -10,13 +10,13 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Mutation(() => AuthResponse)
-  async signUp(@Args('input') data: SignUpInput) {
-    return this.userService.signUp(data);
+  async signUp(@Args('input') signUpInput: SignUpInput) {
+    return this.userService.signUp(signUpInput);
   }
 
   @Mutation(() => AuthResponse)
-  async signIn(@Args('input') data: SignInInput) {
-    return this.userService.signIn(data);
+  async signIn(@Args('input') signInInput: SignInInput) {
+    return this.userService.signIn(signInInput);
   }
 
   @Query(() => String)

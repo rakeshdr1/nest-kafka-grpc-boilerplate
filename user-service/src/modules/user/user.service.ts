@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as grpc from '@grpc/grpc-js';
 
-import { SignInRequest } from '../auth/dto/sign-in.dto';
+import { SignInInput } from '../auth/dto/sign-in.dto';
 import { User } from './schemas/user.schema';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserAlreadyExists } from '@shared/http/message';
@@ -43,8 +43,8 @@ export class UserService {
     return user;
   }
 
-  async create(data: SignInRequest): Promise<User> {
-    const user = await this.userModel.create(data);
+  async create(signInInput: SignInInput): Promise<User> {
+    const user = await this.userModel.create(signInInput);
 
     return user;
   }

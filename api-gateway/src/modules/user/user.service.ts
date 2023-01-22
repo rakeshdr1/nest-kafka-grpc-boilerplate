@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { SignInInput } from './dto/sign-in.dto';
 import { SignUpInput } from './dto/sign-up.dto';
-import { IGrpcService } from './grpc.interface';
+import { IUserGrpcService } from './user-svc.interface';
 import { AuthResponse } from './models/auth.model';
 import { UserServiceClientOptions } from './user-svc.options';
 
@@ -13,19 +13,19 @@ export class UserService {
   @Client(UserServiceClientOptions)
   private client: ClientGrpc;
 
-  private userServiceClient: IGrpcService;
+  private userServiceClient: IUserGrpcService;
 
   onModuleInit() {
     this.userServiceClient =
-      this.client.getService<IGrpcService>('UserService');
+      this.client.getService<IUserGrpcService>('UserService');
   }
 
-  async signUp(data: SignUpInput): Promise<AuthResponse> {
-    return firstValueFrom(this.userServiceClient.create(data));
+  async signUp(signUpInput: SignUpInput): Promise<AuthResponse> {
+    return firstValueFrom(this.userServiceClient.create(signUpInput));
   }
 
-  async signIn(data: SignInInput): Promise<AuthResponse> {
-    return firstValueFrom(this.userServiceClient.signIn(data));
+  async signIn(signInInput: SignInInput): Promise<AuthResponse> {
+    return firstValueFrom(this.userServiceClient.signIn(signInInput));
   }
 
   async verifyToken(accessToken: string): Promise<string> {

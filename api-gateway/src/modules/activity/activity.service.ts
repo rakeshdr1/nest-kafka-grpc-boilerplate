@@ -3,7 +3,7 @@ import { Client, ClientGrpc, ClientKafka } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 import { CONSTANTS } from '@shared/constants';
-import { IGrpcService } from './grpc.interface';
+import { IActivityGrpcService } from './activity-svc.interface';
 import { ActivityServiceClientOptions } from './activity-svc.options';
 import { CreateActivityInput, UpdateActivityInput } from './dto/activity.dto';
 import {
@@ -14,7 +14,7 @@ import {
 
 @Injectable()
 export class ActivityService {
-  private activityGrpcService: IGrpcService;
+  private activityGrpcService: IActivityGrpcService;
 
   @Client(ActivityServiceClientOptions)
   private readonly client: ClientGrpc;
@@ -26,7 +26,7 @@ export class ActivityService {
 
   onModuleInit() {
     this.activityGrpcService =
-      this.client.getService<IGrpcService>('ActivityController');
+      this.client.getService<IActivityGrpcService>('ActivityController');
   }
 
   async findAllByUser(userId: string) {
@@ -35,19 +35,19 @@ export class ActivityService {
     );
   }
 
-  async create(data: CreateActivityInput) {
+  async create(createActivityInput: CreateActivityInput) {
     this.activityService.emit(
       CONSTANTS.KAFKA_TOPICS.ACTIVITY.CREATE,
-      JSON.stringify(data),
+      JSON.stringify(createActivityInput),
     );
 
     return { success: true, message: ActivityCreated };
   }
 
-  async update(data: UpdateActivityInput) {
+  async update(updateActivityInput: UpdateActivityInput) {
     this.activityService.emit(
       CONSTANTS.KAFKA_TOPICS.ACTIVITY.UPDATE,
-      JSON.stringify(data),
+      JSON.stringify(updateActivityInput),
     );
 
     return { success: true, message: ActivityUpdated };

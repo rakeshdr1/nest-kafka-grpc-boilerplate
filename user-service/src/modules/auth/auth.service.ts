@@ -7,8 +7,8 @@ import * as bcrypt from 'bcryptjs';
 
 import { TokensResponse } from './dto/token-response.dto';
 import { User } from '../user/schemas/user.schema';
-import { SignInRequest } from './dto/sign-in.dto';
-import { SignUpRequest } from './dto/sign-up.dto';
+import { SignInInput } from './dto/sign-in.dto';
+import { SignUpInput } from './dto/sign-up.dto';
 import { CONSTANTS } from '@shared/constants';
 import { ResponseHandlerService } from '@shared/handlers/response-handlers';
 import { UserService } from '../user/user.service';
@@ -32,8 +32,8 @@ export class AuthService {
     private readonly responseHandlerService: ResponseHandlerService,
   ) {}
 
-  async signUp(data: SignUpRequest): Promise<TokensResponse> {
-    const userData = await this.userService.findOneByEmail(data.email);
+  async signUp(signUpInput: SignUpInput): Promise<TokensResponse> {
+    const userData = await this.userService.findOneByEmail(signUpInput.email);
 
     if (userData) {
       return this.responseHandlerService.response(
@@ -44,22 +44,22 @@ export class AuthService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 7);
+    const hashedPassword = await bcrypt.hash(signUpInput.password, 7);
     const user = await this.userService.create({
-      ...data,
+      ...signUpInput,
       password: hashedPassword,
     });
 
     this.notificationClient.emit(
       CONSTANTS.KAFKA_TOPICS.USER.USER_CREATED,
-      JSON.stringify(data),
+      JSON.stringify(signUpInput),
     );
 
     const tokens = await this.generateTokens(user);
     return { user, ...tokens };
   }
 
-  async signIn(data: SignInRequest): Promise<TokensResponse> {
+  async signIn(data: SignInInput): Promise<TokensResponse> {
     const user = await this.verifyUser(data.email, data.password);
 
     const tokens = await this.generateTokens(user);

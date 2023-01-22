@@ -1,12 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-
-import { User } from './user.schema';
+import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Activity extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name, index: true })
-  user: User;
+  @Prop()
+  user: string;
 
   @Prop({ required: true })
   name: string;

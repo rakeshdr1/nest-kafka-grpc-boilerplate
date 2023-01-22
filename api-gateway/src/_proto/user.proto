@@ -17,7 +17,7 @@ message CreateUserDto{
 
 message LoginUserDto{
     string email=1;
-    string password=3;
+    string password=2;
 }
 
 
@@ -45,5 +45,3 @@ message Token{
 message UserId{
     string id=1;
 }
-
-
